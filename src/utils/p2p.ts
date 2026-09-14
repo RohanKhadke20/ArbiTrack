@@ -3,6 +3,7 @@ import { db } from '../db/db';
 import { mergeSyncData } from '../db/queries';
 import { useAppStore } from '../store/useAppStore';
 import { CryptoService } from '../services/cryptoService';
+import { applyRemoteUpdate, encodeFullState } from './crdtStore';
 
 let peer: Peer | null = null;
 let connections: DataConnection[] = [];
@@ -43,13 +44,22 @@ const handleConnection = (conn: DataConnection) => {
     console.log('Connected to:', conn.peer);
     useAppStore.getState().setConnectionStatus(true);
     connections.push(conn);
-    
+
+    // Bootstrap new peer with full CRDT state
+    conn.send(encodeFullState());
+
     // Automatically trigger a sync when connected
     triggerSync(conn);
   });
 
   conn.on('data', async (encryptedPayload: unknown) => {
     try {
+      // CRDT state sync — binary Uint8Array frames are Yjs updates
+      if (encryptedPayload instanceof Uint8Array) {
+        applyRemoteUpdate(encryptedPayload);
+        return;
+      }
+
       if (typeof encryptedPayload !== 'string' || !encryptedPayload) {
         return; // Discard invalid or empty frames
       }
