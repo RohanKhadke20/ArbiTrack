@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSecureLiveQuery } from '../../hooks/useSecureLiveQuery';
 import { DBEncryptionService } from '../../services/dbService';
 import { db } from '../../db/db';
+import { seedDemoProducts } from '../../db/queries';
 import { useCartStore } from '../../store/useCartStore';
 import { Search, Plus } from 'lucide-react';
 
@@ -83,8 +84,23 @@ export const Shop = () => {
           );
         })}
         {filteredProducts.length === 0 && (
-          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)', fontSize: '1.2rem' }}>
-            कोई सामान नहीं मिला / No items found
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '1.2rem', marginBottom: '16px' }}>कोई सामान नहीं मिला / No items found</p>
+            <button 
+              style={{
+                padding: '10px 20px',
+                borderRadius: '8px',
+                background: 'var(--primary, #0284c7)',
+                color: '#fff',
+                border: 'none',
+                fontWeight: 600,
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)'
+              }}
+              onClick={() => seedDemoProducts()}
+            >
+              🚀 Pre-Seed Demo Catalog (Instant Review)
+            </button>
           </div>
         )}
       </div>

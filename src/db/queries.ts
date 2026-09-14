@@ -115,3 +115,22 @@ export const mergeSyncData = async (incomingProducts: Product[], incomingOrders:
     }
   });
 };
+
+/** Seed sample demo products for instant onboarding & zero-friction evaluation */
+export const seedDemoProducts = async (): Promise<number> => {
+  const existingCount = await db.products.count();
+  if (existingCount > 0) return 0;
+
+  const demoItems = [
+    { name: 'Quantum Core Processor', price: 499.99, stock: 15, barcode: 'QCP-9901' },
+    { name: 'Neural Link Interface', price: 129.50, stock: 40, barcode: 'NLI-8822' },
+    { name: 'Cryo Cooling Module', price: 89.00, stock: 25, barcode: 'CCM-7711' },
+    { name: 'Holographic Display Unit', price: 349.00, stock: 12, barcode: 'HDU-6633' },
+    { name: 'Fiber Bus Transceiver', price: 45.00, stock: 60, barcode: 'FBT-5544' },
+  ];
+
+  for (const item of demoItems) {
+    await addProduct(item);
+  }
+  return demoItems.length;
+};
