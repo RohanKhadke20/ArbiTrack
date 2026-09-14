@@ -92,14 +92,37 @@ npm run dev
 npm run build
 ```
 
-### 4. Running Capacitor Mobile Sync
+### 4. Running Capacitor Mobile Sync & Native Build
 ```bash
-# Sync build outputs with native platforms
-npx cap sync
+# Add Android platform target (first time)
+npx cap add android
+
+# Sync production bundle into Android project
+npx cap sync android
+
+# Open Android Studio to build signed APK
+npx cap open android
 ```
+
+---
+
+## 🧪 Real-World Testing & Verification Workflows
+
+### 1. P2P Mesh Sync Verification (Multi-Device / Tab)
+1. Open two separate browser tabs or devices:
+   - **Terminal A (Retailer Device)**: Navigate to `/#/admin/sync` to obtain your unique Peer ID.
+   - **Terminal B (Counter Device)**: Enter Terminal A's Peer ID in the connect box and click **Connect**.
+2. Once the WebRTC data channel transitions to `CONNECTED`, modify an inventory item or create an order on Terminal A.
+3. Observe real-time state synchronization reflected in Terminal B's local Dexie database without any intermediate server!
+
+### 2. Encrypted Backup & Disaster Recovery
+- Navigate to **Admin > Backup & Restore**.
+- Click **Export Database Snapshot** to download an encrypted JSON replica of all products, inventory balances, and historical orders.
+- To simulate disaster recovery, wipe browser IndexedDB data and upload the snapshot file to restore full operational capability.
 
 ---
 
 ## 📜 License
 
 MIT License &copy; 2026 Rohan Khadke.
+
