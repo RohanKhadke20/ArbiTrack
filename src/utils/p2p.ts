@@ -50,12 +50,18 @@ const handleConnection = (conn: DataConnection) => {
 
   conn.on('data', async (encryptedPayload: unknown) => {
     try {
-      const decryptedString = await CryptoService.decryptData(encryptedPayload as string);
-      const data = JSON.parse(decryptedString) as { type: string; payload: { products: unknown[]; orders: unknown[] } };
+      if (typeof encryptedPayload !== 'string' || !encryptedPayload) {
+        return; // Discard invalid or empty frames
+      }
 
-      if (data.type === 'SYNC_DATA') {
+      const decryptedString = await CryptoService.decryptData(encryptedPayload);
+      const data = JSON.parse(decryptedString) as { type?: string; payload?: { products?: unknown[]; orders?: unknown[] } };
+
+      if (data && data.type === 'SYNC_DATA' && data.payload) {
         console.log('Received secure sync data from', conn.peer);
-        const { products, orders } = data.payload;
+        const products = Array.isArray(data.payload.products) ? data.payload.products : [];
+        const orders = Array.isArray(data.payload.orders) ? data.payload.orders : [];
+
         await mergeSyncData(
           products as Parameters<typeof mergeSyncData>[0],
           orders as Parameters<typeof mergeSyncData>[1]
@@ -68,7 +74,7 @@ const handleConnection = (conn: DataConnection) => {
         }
       }
     } catch {
-      console.error('Failed to decrypt sync payload from', conn.peer);
+      console.error('Failed to decrypt or parse sync payload from', conn.peer);
     }
   });
 

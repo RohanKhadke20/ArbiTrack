@@ -129,8 +129,11 @@ export const seedDemoProducts = async (): Promise<number> => {
     { name: 'Fiber Bus Transceiver', price: 45.00, stock: 60, barcode: 'FBT-5544' },
   ];
 
-  for (const item of demoItems) {
-    await addProduct(item);
-  }
+  await db.transaction('rw', db.products, async () => {
+    for (const item of demoItems) {
+      await addProduct(item);
+    }
+  });
+
   return demoItems.length;
 };
